@@ -58,7 +58,7 @@ public class PlayerMovement : MonoBehaviour {
     void Update() {
         transform.position += currentDir * _speed * Time.deltaTime;
 
-        if (CurrentJob != null) {
+        if (CurrentJob != null && CitySceneUIManager.Instance.CurrentGameMode == GameMode.Playing) {
             CurrentJob.ReduceTime(Time.deltaTime);
 
             if (CurrentJob.Expired) {
@@ -124,27 +124,27 @@ public class PlayerMovement : MonoBehaviour {
         if (CurrentJob != null) {
             if (!_pickedupPackage) {
                 if (currentBuilding.building == CurrentJob.origin) {
-                    CitySceneUIManager.Instance.ShowMessage("Here's the package!");
+                    CitySceneUIManager.Instance.ShowMessage("Here's the package!", CurrentJob.origin.customer.customer_name);
                     HidePickupMarker();
                     PutDeliveryMarket(GetBuilding(CurrentJob.destination));
                     _pickedupPackage = true;
                 } else {
-                    CitySceneUIManager.Instance.ShowMessage("Sorry, I don't have anything for you");
+                    CitySceneUIManager.Instance.ShowMessage("Sorry, I don't have anything for you", currentBuilding.building.customer.customer_name);
                 }
             } else {
                 // have a package for delivery
                 if (currentBuilding.building == CurrentJob.destination) {
-                    CitySceneUIManager.Instance.ShowMessage($"Thanks! Here's your ${CurrentJob.reward}!");
+                    CitySceneUIManager.Instance.ShowMessage($"Thanks! Here's your ${CurrentJob.reward}!", CurrentJob.destination.customer.customer_name);
                     HideDeliveryMarker();
                     EarnMoney(CurrentJob.reward);
                     _pickedupPackage = false;
                     _currentJob = null;
                 } else {
-                    CitySceneUIManager.Instance.ShowMessage("Sorry, I'm not expecting any deliveries");
+                    CitySceneUIManager.Instance.ShowMessage("Sorry, I'm not expecting any deliveries", currentBuilding.building.customer.customer_name);
                 }
             }
         } else {
-            CitySceneUIManager.Instance.ShowMessage("Nobody's home...");
+            CitySceneUIManager.Instance.ShowMessage("Nobody's home...", "");
         }
     }
 

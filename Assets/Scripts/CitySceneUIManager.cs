@@ -16,7 +16,12 @@ public class CitySceneUIManager : MonoBehaviour {
     private StreetSignManager streetSign;
     [SerializeField] private List<JobListing> jobListings;
     [SerializeField] private Text currentCash;
+
+    [Header("MessageBox Components")]
     [SerializeField] private GameObject MessageBox;
+    [SerializeField] private GameObject SpeakerName;
+    [SerializeField] private Text messageText;
+    [SerializeField] private Text speakerNameText;
 
     private GameMode gameMode;
     public GameMode CurrentGameMode { get { return gameMode; } set { gameMode = value; } }
@@ -79,12 +84,18 @@ public class CitySceneUIManager : MonoBehaviour {
 
     private IEnumerator AutohideMessageBox(int time) {
         MessageBox.SetActive(true);
+        SpeakerName.SetActive(speakerNameText.text != "");
+
         yield return new WaitForSeconds(time);
 
         MessageBox.SetActive(false);
+        speakerNameText.text = "";
+        //SpeakerName.SetActive(false);
     }
-    public void ShowMessage(string message) {
-        MessageBox.GetComponentInChildren<Text>().text = message.Trim();
+    public void ShowMessage(string message, string speakerName = "") {
+        messageText.text = message.Trim();
+        speakerNameText.text = speakerName.Trim();
+
         StartCoroutine(AutohideMessageBox(3));
     }
 }
