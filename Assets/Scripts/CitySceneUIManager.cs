@@ -3,12 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum GameMode {
-    Playing,        // wandering around the city
-    Noticeboard,    // looking at the noticeboard
-    PauseMenu,      // looking at the pause menu
-    Interaction     // interacting with a customer
-}
 
 public class CitySceneUIManager : MonoBehaviour {
     public static CitySceneUIManager Instance;

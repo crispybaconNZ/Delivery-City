@@ -45,7 +45,7 @@ Player runs a delivery service, delivering packages around a small city.
 ## Fonts
 - Organo by Nikola Nikolov (https://www.1001freefonts.com/organo.font)
 - Montserrat by Julieta Ulanovsky (https://www.1001freefonts.com/montserrat.font)
-- Advanced Pixel 7 by Style-7 (https://www.1001freefonts.com/advanced-pixel-7.font)
+- H.H. Agallas by deFharo (https://www.1001freefonts.com/h.h.-agallas.font)
 
 ## Audio
 - Sad Trombone by Benboncan (https://freesound.org/people/Benboncan/sounds/73581/)
