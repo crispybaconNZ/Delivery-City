@@ -68,10 +68,11 @@
     <Compile Include="Assets\Scripts\JobManager.cs" />
     <Compile Include="Assets\Scripts\Scriptable Objects\BuildingSO.cs" />
     <Compile Include="Assets\Scripts\AudioManager.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\LevelLoader.cs" />
+    <Compile Include="Assets\Scripts\CreditsUIManager.cs" />
     <Compile Include="Assets\Scripts\CityBlock.cs" />
     <Compile Include="Assets\Scripts\Job.cs" />
-    <Compile Include="Assets\Scripts\GameManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

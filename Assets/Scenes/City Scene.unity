@@ -416,6 +416,14 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Empty Lot
       objectReference: {fileID: 0}
+    - target: {fileID: 6439860738746287082, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
+      propertyPath: m_Size.y
+      value: 7.131977
+      objectReference: {fileID: 0}
+    - target: {fileID: 6439860738746287082, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.56598854
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
 --- !u!4 &122177084 stripped
@@ -481,6 +489,14 @@ PrefabInstance:
     - target: {fileID: 4823429517246397451, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
       propertyPath: m_Name
       value: Mill
+      objectReference: {fileID: 0}
+    - target: {fileID: 6439860738746287082, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
+      propertyPath: m_Size.x
+      value: 8.92548
+      objectReference: {fileID: 0}
+    - target: {fileID: 6439860738746287082, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.46273994
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
@@ -2022,6 +2038,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Package Road 14
       objectReference: {fileID: 0}
+    - target: {fileID: 6439860738746287082, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
+      propertyPath: m_Size.x
+      value: 8.979174
+      objectReference: {fileID: 0}
+    - target: {fileID: 6439860738746287082, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.48958683
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
 --- !u!1 &482797898
@@ -3516,6 +3540,14 @@ PrefabInstance:
     - target: {fileID: 4823429517246397451, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
       propertyPath: m_TagString
       value: Empty Lot
+      objectReference: {fileID: 0}
+    - target: {fileID: 6439860738746287082, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
+      propertyPath: m_Size.y
+      value: 7.0291157
+      objectReference: {fileID: 0}
+    - target: {fileID: 6439860738746287082, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.51455784
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: edc4f37c73f3d204898c9952a63810e2, type: 3}
@@ -8115,7 +8147,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 65.494995, y: -10.712036}
+  m_AnchoredPosition: {x: 65.49512, y: -10.712036}
   m_SizeDelta: {x: 130.99, y: 21.424}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1929341782
