@@ -3,10 +3,12 @@ using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour {
     public static PlayerMovement Instance = null;
     private PlayerInput playerInput;
+    private PlayerControls playerControls;
     [SerializeField] private float _speed = 0.5f;
     private Vector3 currentDir;
     private CityBlock currentBuilding;
@@ -19,8 +21,24 @@ public class PlayerMovement : MonoBehaviour {
     public List<CityBlock> buildings = new List<CityBlock>();
     private bool _pickedupPackage;   // false if hasn't picked up package yet, true if has package to be delivered
 
+    [Header("Job Location Markers")]
     [SerializeField] private Transform pickupMarker;
     [SerializeField] private Transform deliveryMarker;
+
+    [Header("Claim Job Buttons")]
+    [SerializeField] private Image claimJob1;
+    [SerializeField] private Image claimJob2;
+    private int _currentClaimJob = 0;
+
+    [Header("Dialog Box Backgrounds")]
+    [SerializeField] private Sprite selected;
+    [SerializeField] private Sprite unselected;
+
+    [Header("Pause Menu Buttons")]
+    [SerializeField] private Image resumeGame;
+    [SerializeField] private Image returnToMain;
+    [SerializeField] private Image exitGame;
+    private int _currentPauseMenu = 0;
 
     // ----- EVENTS -----
     [System.Serializable] public class PlayerMovementEvent : UnityEvent<BuildingSO> { }
@@ -40,19 +58,69 @@ public class PlayerMovement : MonoBehaviour {
     void Awake() {
         if (Instance == null) { Instance = this; }
         playerInput = GetComponent<PlayerInput>();
-        PlayerControls playerControls = new PlayerControls();
-        playerControls.Player.Movement.performed += PlayerMove;
-        playerControls.Player.Movement.canceled += PlayerMove;
-        playerControls.Player.Interact.performed += PlayerInteract;
-        playerControls.Player.Noticeboard.performed += ToggleNoticeboard;
-        playerControls.Player.PauseMenu.performed += TogglePauseMenu;
-        playerControls.Player.Enable();
+        playerControls = new PlayerControls();
+        EnablePlayerMovement();
+        DisableNoticeboardControls();
+        DisablePauseMenuControls();
+
         currentDir = Vector3.zero;
         currentBuilding = null;
 
         if (onEnterBuildingZone == null) { onEnterBuildingZone = new PlayerMovementEvent(); }
         if (onLeaveBuildingZone == null) { onLeaveBuildingZone = new PlayerMovementEvent(); }
         if (cashChanged == null) { cashChanged = new UIEvent(); }
+    }
+
+    void EnablePlayerMovement() {
+        if (playerControls == null) { return; }
+        playerControls.Player.Movement.performed += PlayerMove;
+        playerControls.Player.Movement.canceled += PlayerMove;
+        playerControls.Player.Interact.performed += PlayerInteract;
+        playerControls.Player.Noticeboard.performed += ToggleNoticeboard;
+        playerControls.Player.PauseMenu.performed += TogglePauseMenu;
+        playerControls.Player.Enable();
+    }
+
+    void DisablePlayerMovement() {
+        if (playerControls == null) { return; }
+        playerControls.Player.Movement.performed -= PlayerMove;
+        playerControls.Player.Movement.canceled -= PlayerMove;
+        playerControls.Player.Interact.performed -= PlayerInteract;
+        playerControls.Player.Noticeboard.performed -= ToggleNoticeboard;
+        playerControls.Player.PauseMenu.performed -= TogglePauseMenu;
+        playerControls.Player.Enable();
+    }
+
+    void EnableNoticeboardControls() {
+        if (playerControls == null) { return; }
+        playerControls.Noticeboard.Navigate.performed += ChangeNoticeboardSelection;
+        playerControls.Noticeboard.Cancel.performed += CancelNoticeboard;
+        playerControls.Noticeboard.Select.performed += ClaimJob;
+        playerControls.Noticeboard.Enable();
+    }
+
+    void DisableNoticeboardControls() {
+        if (playerControls == null) { return; }
+        playerControls.Noticeboard.Navigate.performed -= ChangeNoticeboardSelection;
+        playerControls.Noticeboard.Cancel.performed -= CancelNoticeboard;
+        playerControls.Noticeboard.Select.performed -= ClaimJob;
+        playerControls.Noticeboard.Disable();
+    }
+
+    void EnablePauseMenuControls() {
+        if (playerControls == null) { return; }
+        playerControls.PauseMenu.Navigate.performed += ChangePauseMenuSelection;
+        playerControls.PauseMenu.Select.performed += PauseMenuSelect;
+        playerControls.PauseMenu.Cancel.performed += CancelPauseMenu;
+        playerControls.PauseMenu.Enable();
+    }
+
+    void DisablePauseMenuControls() {
+        if (playerControls == null) { return; }
+        playerControls.PauseMenu.Navigate.performed -= ChangePauseMenuSelection;
+        playerControls.PauseMenu.Select.performed -= PauseMenuSelect;
+        playerControls.PauseMenu.Cancel.performed -= CancelPauseMenu;
+        playerControls.PauseMenu.Disable();
     }
 
     void Update() {
@@ -141,6 +209,7 @@ public class PlayerMovement : MonoBehaviour {
                     _currentJob = null;
                 } else {
                     CitySceneUIManager.Instance.ShowMessage("Sorry, I'm not expecting any deliveries", currentBuilding.building.customer.customer_name);
+                    JobManager.Instance.CreateJobs();
                 }
             }
         } else {
@@ -165,12 +234,18 @@ public class PlayerMovement : MonoBehaviour {
         }
     }
 
+    // ----- NOTICEBOARD -----
     private void OpenNoticeboard() {
-        if (CitySceneUIManager.Instance.CurrentGameMode != GameMode.Playing) return;
+        // Can't open noticeboard if not in Playing mode, or if the player already has a job
+        if (CitySceneUIManager.Instance.CurrentGameMode != GameMode.Playing || CurrentJob != null) return;
         noticeboardAnim.SetTrigger("OpenNoticeboard");
         noticeboardOpen = true;
         AudioManager.Instance.PlaySwoosh();
         CitySceneUIManager.Instance.CurrentGameMode = GameMode.Noticeboard;
+        EnableNoticeboardControls();
+        DisablePlayerMovement();
+        _currentClaimJob = 0;
+        UpdateClaimJobBackgrounds();
     }
 
     private void CloseNoticeboard() {
@@ -179,6 +254,30 @@ public class PlayerMovement : MonoBehaviour {
         noticeboardOpen = false;
         AudioManager.Instance.PlaySwoosh();
         CitySceneUIManager.Instance.CurrentGameMode = GameMode.Playing;
+        DisableNoticeboardControls();
+        EnablePlayerMovement();
+    }
+
+    private void UpdateClaimJobBackgrounds() {
+        if (_currentClaimJob == 0) {
+            claimJob1.sprite = selected;
+            claimJob2.sprite = unselected;
+        } else {
+            claimJob1.sprite = unselected;
+            claimJob2.sprite = selected;
+        }
+    }
+
+    private void ChangeNoticeboardSelection(InputAction.CallbackContext context) {
+        float dir = context.action.ReadValue<float>();
+        if (dir == 0) { return; }
+
+        _currentClaimJob = _currentClaimJob == 0 ? 1 : 0;
+        UpdateClaimJobBackgrounds();
+    }
+
+    private void CancelNoticeboard(InputAction.CallbackContext context) {
+        CloseNoticeboard();
     }
 
     private void ToggleNoticeboard(InputAction.CallbackContext context) {
@@ -189,14 +288,16 @@ public class PlayerMovement : MonoBehaviour {
         }
     }
 
-    public void ClaimJob(Job job) {
+    public void ClaimJob(InputAction.CallbackContext context) {
         CloseNoticeboard();
-        _currentJob = job;
+        _currentJob = JobManager.Instance.jobs[_currentClaimJob];
         _pickedupPackage = false;
+        JobManager.Instance.JobClaimed(CurrentJob);
 
-        PutPickupMarker(GetBuilding(job.origin));
+        PutPickupMarker(GetBuilding(_currentJob.origin));
     }
 
+    // ----- JOB MARKERS -----
     private void PutPickupMarker(CityBlock origin) {
         if (origin == null) return;
         pickupMarker.transform.position = origin.transform.position;
@@ -217,12 +318,16 @@ public class PlayerMovement : MonoBehaviour {
         deliveryMarker.gameObject.SetActive(true);
     }
 
+    // ----- PAUSE MENU -----
     private void OpenPauseMenu() {
         if (CitySceneUIManager.Instance.CurrentGameMode != GameMode.Playing) return;
         pauseMenuAnim.SetTrigger("PauseMenuOpen");
         pauseMenuOpen = true;
         AudioManager.Instance.PlaySwoosh();
         CitySceneUIManager.Instance.CurrentGameMode = GameMode.PauseMenu;
+        _currentPauseMenu = 0;
+        DisablePlayerMovement();
+        EnablePauseMenuControls();
     }
 
     private void ClosePauseMenu() {
@@ -231,6 +336,8 @@ public class PlayerMovement : MonoBehaviour {
         pauseMenuOpen = false;
         AudioManager.Instance.PlaySwoosh();
         CitySceneUIManager.Instance.CurrentGameMode = GameMode.Playing;
+        EnablePlayerMovement();
+        DisablePauseMenuControls();
     }
 
     private void TogglePauseMenu(InputAction.CallbackContext context) {
@@ -241,7 +348,52 @@ public class PlayerMovement : MonoBehaviour {
         }
     }
 
+    private void ChangePauseMenuSelection(InputAction.CallbackContext context) {
+        float dir = context.action.ReadValue<float>();
+        if (dir == 0) { return; }
+
+        if (dir > 0) {
+            // down
+            _currentPauseMenu--;
+            if (_currentPauseMenu < 0) { _currentPauseMenu = 2; }
+        } else {
+            // up
+            _currentPauseMenu++;
+            if (_currentPauseMenu > 2) { _currentPauseMenu = 0; }
+        }
+        UpdatePauseMenuButtons();
+    }
+
+    private void UpdatePauseMenuButtons() {
+        resumeGame.sprite = _currentPauseMenu == 0 ? selected : unselected;
+        returnToMain.sprite = _currentPauseMenu == 1 ? selected : unselected;
+        exitGame.sprite = _currentPauseMenu == 2 ? selected : unselected;
+    }
+
+    private void PauseMenuSelect(InputAction.CallbackContext context) {
+        switch (_currentPauseMenu) {
+            case 0:                
+                ResumeGame();
+                break;
+            case 1:
+                ReturnToMain();
+                break;
+            case 2:
+                CitySceneUIManager.Instance.ExitGame();
+                break;
+            default:
+                Debug.Log($"Unknown pause menu option {_currentPauseMenu}");
+                break;
+        }
+    }
+
+    private void CancelPauseMenu(InputAction.CallbackContext context) {
+        ResumeGame();
+    }
+
     public void ResumeGame() {
+        DisablePauseMenuControls();
+        EnablePlayerMovement();
         ClosePauseMenu();
     }
 
@@ -262,11 +414,22 @@ public class PlayerMovement : MonoBehaviour {
         AudioManager.Instance.PlaySadTrombone();
     }
 
+
+    // GameOver
     public void GameOver() {
         gameOverAnim.SetTrigger("GameOver");
+        playerControls.MainMenu.Select.performed += GameOverExit;
+        playerControls.MainMenu.Enable();
+    }
+
+    private void GameOverExit(InputAction.CallbackContext context) {
+        playerControls.MainMenu.Select.performed -= GameOverExit;
+        playerControls.MainMenu.Disable();
+        ReturnToMain();
     }
 
     public void ReturnToMain() {
+        DisablePauseMenuControls();
         SceneManager.LoadScene(0);
     }
 }

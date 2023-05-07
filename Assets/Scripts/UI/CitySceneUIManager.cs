@@ -73,7 +73,6 @@ public class CitySceneUIManager : MonoBehaviour {
 #else
         Application.Quit();
 #endif
-
     }
 
     private IEnumerator AutohideMessageBox(int time) {

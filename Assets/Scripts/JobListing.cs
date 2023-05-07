@@ -31,17 +31,18 @@ public class JobListing : MonoBehaviour {
         this.image.sprite = job.goods.image;
         this._job = job;
 
-        claimButton.enabled = PlayerMovement.Instance.CurrentJob == null;
-        claimButton.GetComponentInChildren<Text>().text = PlayerMovement.Instance.CurrentJob == null ? "Claim Job" : "Finish current job first";
+        //claimButton.enabled = PlayerMovement.Instance.CurrentJob == null;
+        //claimButton.GetComponentInChildren<Text>().text = PlayerMovement.Instance.CurrentJob == null ? "Claim Job" : "Finish current job first";
     }
 
     public void ClaimJob() {
+        Debug.Log("JobListing.ClaimJob()");
         JobManager.Instance.jobClaimedEvent?.Invoke(_job);
         this._job = null;
     }
 
     private void Update() {
-        claimButton.enabled = PlayerMovement.Instance.CurrentJob == null;
-        claimButton.GetComponentInChildren<Text>().text = PlayerMovement.Instance.CurrentJob == null ? "Claim Job" : "Finish current job first";
+        //claimButton.enabled = PlayerMovement.Instance.CurrentJob == null;
+        //claimButton.GetComponentInChildren<Text>().text = PlayerMovement.Instance.CurrentJob == null ? "Claim Job" : "Finish current job first";
     }
 }

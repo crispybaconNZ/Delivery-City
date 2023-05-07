@@ -7,7 +7,7 @@ public class JobManager : MonoBehaviour {
     public static JobManager Instance = null;
 
     [SerializeField] private int maxJobs = 2;
-    private List<Job> jobs = new List<Job>();
+    public List<Job> jobs = new List<Job>();
 
     [Header("City Locations")]
     [SerializeField] private List<BuildingSO> buildings;
@@ -25,8 +25,6 @@ public class JobManager : MonoBehaviour {
         if (jobChangeEvent == null) { jobChangeEvent = new JobManagerEvent(); }
         if (jobClaimedEvent == null) { jobClaimedEvent = new JobClaimedEvent(); }
         if (Instance == null) { Instance = this; }
-
-        jobClaimedEvent.AddListener(JobClaimed);
     }
 
     void Update() {
@@ -61,18 +59,12 @@ public class JobManager : MonoBehaviour {
         return job;
     }
 
-    private void CreateJobs() {
+    public void CreateJobs() {
         while (jobs.Count < maxJobs) {
             Job job = RandomJob();
 
             // add to list of jobs
             AddJob(job);
-        }
-    }
-
-    private void ReduceJobTimes(float delta) {
-        foreach (Job job in jobs) {
-            job.ReduceTime(delta);
         }
     }
 
@@ -82,8 +74,7 @@ public class JobManager : MonoBehaviour {
         jobChangeEvent?.Invoke(jobs);
     }
 
-    private void JobClaimed(Job job) {
+    public void JobClaimed(Job job) {
         jobs.Remove(job);
-        PlayerMovement.Instance.ClaimJob(job);
     }
 }
