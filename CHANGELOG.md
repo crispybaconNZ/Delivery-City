@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 1.1 (unreleased)
+## Version 1.1 (07 May 2023)
 ### Bugfixes
 - Fixed pause menu bug (job timer would still count down while pause menu or noticeboard was being displayed).
 - Fixed holes in the colliders allowing players to escape the city.
@@ -12,6 +12,7 @@
 - Updated the pick-up and delivery markers to both downward-facing arrows, and with "pick up" and "drop off" labels.
 - Added Credits screen, accessible from main menu.
 - Removed mouse button controls, replaced with keyboard or game controller selectable "buttons".
+- Fixed colliders for buildings.
 
 ### Meta
 - Added `CHANGELOG.md`.
