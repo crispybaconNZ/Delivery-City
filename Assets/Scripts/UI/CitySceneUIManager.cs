@@ -83,11 +83,11 @@ public class CitySceneUIManager : MonoBehaviour {
 
         MessageBox.SetActive(false);
         speakerNameText.text = "";
-        //SpeakerName.SetActive(false);
     }
+
     public void ShowMessage(string message, string speakerName = "") {
         messageText.text = message.Trim();
-        speakerNameText.text = speakerName.Trim();
+        speakerNameText.text = speakerName.Trim();        
 
         StartCoroutine(AutohideMessageBox(3));
     }

@@ -2,10 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public enum GenderEnum {
+    None,
+    Male,
+    Female
+}
+
 [CreateAssetMenu(menuName = "Customer", fileName = "New Customer")]
 public class CustomerSO : ScriptableObject {
-    public string customer_name;
-
+    public string customerName;
+    public GenderEnum customerGender;
     public List<GoodsSO> produces;  // list of goods that this customer produces
     public List<GoodsSO> accepts;   // list of goods that this customer accepts
 

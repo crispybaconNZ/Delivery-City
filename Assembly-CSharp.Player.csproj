@@ -86,6 +86,8 @@
     <Compile Include="Assets\Scripts\UI\CreditsUIManager.cs" />
     <Compile Include="Assets\Scripts\CityBlock.cs" />
     <Compile Include="Assets\Scripts\Job.cs" />
+    <Compile Include="Assets\Scripts\UI\CurrentJobDisplayManager.cs" />
+    <Compile Include="Assets\Scripts\UI\GameOverManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

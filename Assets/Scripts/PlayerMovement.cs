@@ -53,11 +53,6 @@ public class PlayerMovement : MonoBehaviour {
     [SerializeField] private Animator pauseMenuAnim;
     [SerializeField] private Animator gameOverAnim;
 
-    // ----- Audio -----
-    [Header("Audio Clips")]
-    [SerializeField] private AudioClip _femaleThanks;
-    [SerializeField] private AudioClip _maleThanks;
-
     void Awake() {
         if (Instance == null) { Instance = this; }
         playerInput = GetComponent<PlayerInput>();
@@ -68,6 +63,8 @@ public class PlayerMovement : MonoBehaviour {
         if (onEnterBuildingZone == null) { onEnterBuildingZone = new PlayerMovementEvent(); }
         if (onLeaveBuildingZone == null) { onLeaveBuildingZone = new PlayerMovementEvent(); }
         if (cashChanged == null) { cashChanged = new UIEvent(); }
+
+        LeanTween.init(800);
     }
 
     private void Start() {
@@ -197,25 +194,26 @@ public class PlayerMovement : MonoBehaviour {
         if (CurrentJob != null) {
             if (!_pickedupPackage) {
                 if (currentBuilding.building == CurrentJob.origin) {
-                    CitySceneUIManager.Instance.ShowMessage("Here's the package!", CurrentJob.origin.customer.customer_name);
+                    CitySceneUIManager.Instance.ShowMessage("Here's the package!", CurrentJob.origin.customer.customerName);
+                    AudioManager.Instance.PlayPickup(CurrentJob.origin.customer.customerGender);
                     HidePickupMarker();
                     PutDeliveryMarket(GetBuilding(CurrentJob.destination));
                     _pickedupPackage = true;
                 } else {
-                    CitySceneUIManager.Instance.ShowMessage("Sorry, I don't have anything for you", currentBuilding.building.customer.customer_name);
+                    CitySceneUIManager.Instance.ShowMessage("Sorry, I don't have anything for you", currentBuilding.building.customer.customerName);
                 }
             } else {
                 // have a package for delivery
                 if (currentBuilding.building == CurrentJob.destination) {
-                    CitySceneUIManager.Instance.ShowMessage($"Thanks! Here's your ${CurrentJob.reward}!", CurrentJob.destination.customer.customer_name);
-                    AudioManager.Instance.PlayThanks();
+                    CitySceneUIManager.Instance.ShowMessage($"Thanks! Here's your ${CurrentJob.reward}!", CurrentJob.destination.customer.customerName);
+                    AudioManager.Instance.PlayThanks(CurrentJob.destination.customer.customerGender);
                     HideDeliveryMarker();
                     EarnMoney(CurrentJob.reward);
-                    AudioManager.Instance.PlayThanks();
+                    AudioManager.Instance.PlayThanks(CurrentJob.destination.customer.customerGender);
                     _pickedupPackage = false;
                     _currentJob = null;
                 } else {
-                    CitySceneUIManager.Instance.ShowMessage("Sorry, I'm not expecting any deliveries", currentBuilding.building.customer.customer_name);
+                    CitySceneUIManager.Instance.ShowMessage("Sorry, I'm not expecting any deliveries", currentBuilding.building.customer.customerName);
                     JobManager.Instance.CreateJobs();
                 }
             }
@@ -425,8 +423,10 @@ public class PlayerMovement : MonoBehaviour {
     // GameOver
     public void GameOver() {
         gameOverAnim.SetTrigger("GameOver");
+        //GameOverManager.Instance.Open();
         playerControls.MainMenu.Select.performed += GameOverExit;
         playerControls.MainMenu.Enable();
+        playerControls.Player.Disable();
     }
 
     private void GameOverExit(InputAction.CallbackContext context) {
