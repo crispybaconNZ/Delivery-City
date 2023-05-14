@@ -6,13 +6,12 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour {
-    public static PlayerMovement Instance = null;
+    public static PlayerMovement Instance;
     private PlayerInput playerInput;
     private PlayerControls playerControls;
     [SerializeField] private float _speed = 0.5f;
     private Vector3 currentDir;
     private CityBlock currentBuilding;
-    private bool noticeboardOpen = false;
     private bool pauseMenuOpen = false;
     private Job _currentJob = null;
     private int _currentCash = 0;
@@ -51,24 +50,34 @@ public class PlayerMovement : MonoBehaviour {
     public UIEvent cashChanged;
     
     // ----- ANIMATIONS -----
-    [SerializeField] private Animator noticeboardAnim;
     [SerializeField] private Animator pauseMenuAnim;
     [SerializeField] private Animator gameOverAnim;
+
+    // ----- Audio -----
+    [Header("Audio Clips")]
+    [SerializeField] private AudioClip _femaleThanks;
+    [SerializeField] private AudioClip _maleThanks;
 
     void Awake() {
         if (Instance == null) { Instance = this; }
         playerInput = GetComponent<PlayerInput>();
         playerControls = new PlayerControls();
-        EnablePlayerMovement();
-        DisableNoticeboardControls();
-        DisablePauseMenuControls();
-
         currentDir = Vector3.zero;
         currentBuilding = null;
 
         if (onEnterBuildingZone == null) { onEnterBuildingZone = new PlayerMovementEvent(); }
         if (onLeaveBuildingZone == null) { onLeaveBuildingZone = new PlayerMovementEvent(); }
         if (cashChanged == null) { cashChanged = new UIEvent(); }
+    }
+
+    private void Start() {
+        SetCash(1);
+        FindAllBuildings();
+        deliveryMarker.gameObject.SetActive(false);
+        pickupMarker.gameObject.SetActive(false);
+        EnablePlayerMovement();
+        DisableNoticeboardControls();
+        DisablePauseMenuControls();
     }
 
     void EnablePlayerMovement() {
@@ -78,6 +87,7 @@ public class PlayerMovement : MonoBehaviour {
         playerControls.Player.Interact.performed += PlayerInteract;
         playerControls.Player.Noticeboard.performed += ToggleNoticeboard;
         playerControls.Player.PauseMenu.performed += TogglePauseMenu;
+        playerControls.Player.Minimap.performed += MinimapManager.Instance.ToggleMinimap;
         playerControls.Player.Enable();
     }
 
@@ -88,6 +98,7 @@ public class PlayerMovement : MonoBehaviour {
         playerControls.Player.Interact.performed -= PlayerInteract;
         playerControls.Player.Noticeboard.performed -= ToggleNoticeboard;
         playerControls.Player.PauseMenu.performed -= TogglePauseMenu;
+        playerControls.Player.Minimap.performed -= MinimapManager.Instance.ToggleMinimap;
         playerControls.Player.Enable();
     }
 
@@ -141,13 +152,7 @@ public class PlayerMovement : MonoBehaviour {
             GameOver();
         }
     }
-    private void Start() {
-        SetCash(1);
-        FindAllBuildings();
-        deliveryMarker.gameObject.SetActive(false);
-        pickupMarker.gameObject.SetActive(false);
-    }
-
+ 
     private void FindAllBuildings() {
         CityBlock[] locations = GameObject.FindObjectsOfType<CityBlock>();
         buildings.Clear();
@@ -203,8 +208,10 @@ public class PlayerMovement : MonoBehaviour {
                 // have a package for delivery
                 if (currentBuilding.building == CurrentJob.destination) {
                     CitySceneUIManager.Instance.ShowMessage($"Thanks! Here's your ${CurrentJob.reward}!", CurrentJob.destination.customer.customer_name);
+                    AudioManager.Instance.PlayThanks();
                     HideDeliveryMarker();
                     EarnMoney(CurrentJob.reward);
+                    AudioManager.Instance.PlayThanks();
                     _pickedupPackage = false;
                     _currentJob = null;
                 } else {
@@ -235,27 +242,29 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     // ----- NOTICEBOARD -----
-    private void OpenNoticeboard() {
-        // Can't open noticeboard if not in Playing mode, or if the player already has a job
-        if (CitySceneUIManager.Instance.CurrentGameMode != GameMode.Playing || CurrentJob != null) return;
-        noticeboardAnim.SetTrigger("OpenNoticeboard");
-        noticeboardOpen = true;
-        AudioManager.Instance.PlaySwoosh();
-        CitySceneUIManager.Instance.CurrentGameMode = GameMode.Noticeboard;
-        EnableNoticeboardControls();
-        DisablePlayerMovement();
-        _currentClaimJob = 0;
-        UpdateClaimJobBackgrounds();
-    }
-
     private void CloseNoticeboard() {
+        // Check conditions to allow closing of noticeboard
         if (CitySceneUIManager.Instance.CurrentGameMode != GameMode.Noticeboard) return;
-        noticeboardAnim.SetTrigger("CloseNoticeboard");
-        noticeboardOpen = false;
-        AudioManager.Instance.PlaySwoosh();
+
+        // close the noticeboard
+        NoticeboardManager.Instance.Close();
         CitySceneUIManager.Instance.CurrentGameMode = GameMode.Playing;
         DisableNoticeboardControls();
         EnablePlayerMovement();
+        UpdateClaimJobBackgrounds();
+        _currentClaimJob = 0;
+    }
+
+    private void OpenNoticeboard() {
+        // only allow noticeboard to open if in play mode and no job selected
+        if (CitySceneUIManager.Instance.CurrentGameMode != GameMode.Playing || _currentJob != null)
+            return;
+
+        // Open the Noticeboard
+        NoticeboardManager.Instance.Open();
+        CitySceneUIManager.Instance.CurrentGameMode = GameMode.Noticeboard;
+        EnableNoticeboardControls();
+        DisablePlayerMovement();
     }
 
     private void UpdateClaimJobBackgrounds() {
@@ -280,8 +289,8 @@ public class PlayerMovement : MonoBehaviour {
         CloseNoticeboard();
     }
 
-    private void ToggleNoticeboard(InputAction.CallbackContext context) {
-        if (noticeboardOpen) {
+    private void ToggleNoticeboard(InputAction.CallbackContext context) {        
+        if (NoticeboardManager.Instance.IsOpen) {
             CloseNoticeboard();
         } else {
             OpenNoticeboard();
@@ -289,11 +298,11 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     public void ClaimJob(InputAction.CallbackContext context) {
-        CloseNoticeboard();
         _currentJob = JobManager.Instance.jobs[_currentClaimJob];
         _pickedupPackage = false;
         JobManager.Instance.JobClaimed(CurrentJob);
 
+        CloseNoticeboard();
         PutPickupMarker(GetBuilding(_currentJob.origin));
     }
 
@@ -405,13 +414,11 @@ public class PlayerMovement : MonoBehaviour {
     public void EarnMoney(int amount) {
         _currentCash += amount;
         cashChanged?.Invoke();
-        AudioManager.Instance.PlayKaching();
     }
 
     public void EarnPenalty(int amount) {
         _currentCash -= Mathf.Abs(amount);
         cashChanged?.Invoke();
-        AudioManager.Instance.PlaySadTrombone();
     }
 
 

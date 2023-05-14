@@ -12,6 +12,9 @@ public class AudioManager : MonoBehaviour {
     [SerializeField] private AudioClip _swoosh;
     [SerializeField] private AudioClip _kaching;
 
+    [Header("Voice Messages")]
+    [SerializeField] private AudioClip[] _thanks;
+
     private void Awake() {
         if (Instance == null) { Instance = this; }
         _audioSource = GetComponent<AudioSource>();
@@ -29,6 +32,12 @@ public class AudioManager : MonoBehaviour {
 
     public void PlayKaching() {
         _audioSource.clip = _kaching;
+        _audioSource.Play();
+    }
+
+    public void PlayThanks() {
+        int index = Random.Range(0, _thanks.Length);
+        _audioSource.clip = _thanks[index];
         _audioSource.Play();
     }
 }

@@ -51,3 +51,6 @@ Player runs a delivery service, delivering packages around a small city.
 - Sad Trombone by Benboncan (https://freesound.org/people/Benboncan/sounds/73581/)
 - Swoosh by lesaucisson (https://freesound.org/people/lesaucisson/sounds/585256/)
 - Kaching from Till-Gong-Bike remixes of kiddpark's Freesound #201159.wav by Timbre (https://freesound.org/people/Timbre/sounds/404028/)
+
+## Voices
+- Voice synthesis using ElevenLabs (https://beta.elevenlabs.io/) 

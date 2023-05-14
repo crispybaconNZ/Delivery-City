@@ -9,7 +9,7 @@ public class CitySceneUIManager : MonoBehaviour {
 
     private StreetSignManager streetSign;
     [SerializeField] private List<JobListing> jobListings;
-    [SerializeField] private Text currentCash;
+    [SerializeField] private CashDisplayManager currentCash;
 
     [Header("MessageBox Components")]
     [SerializeField] private GameObject MessageBox;
@@ -50,7 +50,7 @@ public class CitySceneUIManager : MonoBehaviour {
     }
 
     private void OnCashChanged() {
-        currentCash.text = $"Cash: ${PlayerMovement.Instance.CurrentCash}";
+        currentCash.UpdateCashDisplay();
     }
 
     private void OnJobListingChange(List<Job> jobs) {
