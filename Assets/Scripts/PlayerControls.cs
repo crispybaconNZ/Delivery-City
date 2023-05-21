@@ -62,6 +62,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Minimap"",
+                    ""type"": ""Button"",
+                    ""id"": ""4b5d90a7-d961-4880-91e8-24cd83b0d2c4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -317,6 +326,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""PauseMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b38f4f90-e28d-473d-a347-041acba09e22"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Minimap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""77927957-bf7f-4e39-bd3d-ab787725e0bf"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Minimap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -497,6 +528,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Minimap"",
+                    ""type"": ""Button"",
+                    ""id"": ""f5770aa6-b317-4e35-9065-ef92df1fd875"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -640,6 +680,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d8f04785-8083-459c-a690-aa5b557410a8"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Minimap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""43fe89cf-46e3-4d36-950b-d81c30fcc2ef"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Minimap"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -849,6 +911,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Noticeboard = m_Player.FindAction("Noticeboard", throwIfNotFound: true);
         m_Player_PauseMenu = m_Player.FindAction("PauseMenu", throwIfNotFound: true);
+        m_Player_Minimap = m_Player.FindAction("Minimap", throwIfNotFound: true);
         // MainMenu
         m_MainMenu = asset.FindActionMap("MainMenu", throwIfNotFound: true);
         m_MainMenu_Move = m_MainMenu.FindAction("Move", throwIfNotFound: true);
@@ -858,6 +921,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Noticeboard_Navigate = m_Noticeboard.FindAction("Navigate", throwIfNotFound: true);
         m_Noticeboard_Select = m_Noticeboard.FindAction("Select", throwIfNotFound: true);
         m_Noticeboard_Cancel = m_Noticeboard.FindAction("Cancel", throwIfNotFound: true);
+        m_Noticeboard_Minimap = m_Noticeboard.FindAction("Minimap", throwIfNotFound: true);
         // PauseMenu
         m_PauseMenu = asset.FindActionMap("PauseMenu", throwIfNotFound: true);
         m_PauseMenu_Navigate = m_PauseMenu.FindAction("Navigate", throwIfNotFound: true);
@@ -928,6 +992,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Noticeboard;
     private readonly InputAction m_Player_PauseMenu;
+    private readonly InputAction m_Player_Minimap;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -936,6 +1001,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @Noticeboard => m_Wrapper.m_Player_Noticeboard;
         public InputAction @PauseMenu => m_Wrapper.m_Player_PauseMenu;
+        public InputAction @Minimap => m_Wrapper.m_Player_Minimap;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -957,6 +1023,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @PauseMenu.started += instance.OnPauseMenu;
             @PauseMenu.performed += instance.OnPauseMenu;
             @PauseMenu.canceled += instance.OnPauseMenu;
+            @Minimap.started += instance.OnMinimap;
+            @Minimap.performed += instance.OnMinimap;
+            @Minimap.canceled += instance.OnMinimap;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -973,6 +1042,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @PauseMenu.started -= instance.OnPauseMenu;
             @PauseMenu.performed -= instance.OnPauseMenu;
             @PauseMenu.canceled -= instance.OnPauseMenu;
+            @Minimap.started -= instance.OnMinimap;
+            @Minimap.performed -= instance.OnMinimap;
+            @Minimap.canceled -= instance.OnMinimap;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1051,6 +1123,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Noticeboard_Navigate;
     private readonly InputAction m_Noticeboard_Select;
     private readonly InputAction m_Noticeboard_Cancel;
+    private readonly InputAction m_Noticeboard_Minimap;
     public struct NoticeboardActions
     {
         private @PlayerControls m_Wrapper;
@@ -1058,6 +1131,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Navigate => m_Wrapper.m_Noticeboard_Navigate;
         public InputAction @Select => m_Wrapper.m_Noticeboard_Select;
         public InputAction @Cancel => m_Wrapper.m_Noticeboard_Cancel;
+        public InputAction @Minimap => m_Wrapper.m_Noticeboard_Minimap;
         public InputActionMap Get() { return m_Wrapper.m_Noticeboard; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1076,6 +1150,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Cancel.started += instance.OnCancel;
             @Cancel.performed += instance.OnCancel;
             @Cancel.canceled += instance.OnCancel;
+            @Minimap.started += instance.OnMinimap;
+            @Minimap.performed += instance.OnMinimap;
+            @Minimap.canceled += instance.OnMinimap;
         }
 
         private void UnregisterCallbacks(INoticeboardActions instance)
@@ -1089,6 +1166,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Cancel.started -= instance.OnCancel;
             @Cancel.performed -= instance.OnCancel;
             @Cancel.canceled -= instance.OnCancel;
+            @Minimap.started -= instance.OnMinimap;
+            @Minimap.performed -= instance.OnMinimap;
+            @Minimap.canceled -= instance.OnMinimap;
         }
 
         public void RemoveCallbacks(INoticeboardActions instance)
@@ -1183,6 +1263,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnInteract(InputAction.CallbackContext context);
         void OnNoticeboard(InputAction.CallbackContext context);
         void OnPauseMenu(InputAction.CallbackContext context);
+        void OnMinimap(InputAction.CallbackContext context);
     }
     public interface IMainMenuActions
     {
@@ -1194,6 +1275,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnNavigate(InputAction.CallbackContext context);
         void OnSelect(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+        void OnMinimap(InputAction.CallbackContext context);
     }
     public interface IPauseMenuActions
     {

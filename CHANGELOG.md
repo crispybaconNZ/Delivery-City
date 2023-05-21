@@ -3,6 +3,8 @@
 ## Version 1.2 (Unreleased)
 ### Features
 - Added minimap.
+- Moved UI animation to LeanTween.
+- Added voices for package collection and delivery messages.
 
 ## Version 1.1 (07 May 2023)
 ### Bugfixes

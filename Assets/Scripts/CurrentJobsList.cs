@@ -7,6 +7,15 @@ public class CurrentJobsList : MonoBehaviour {
     [SerializeField] private Text _jobsList;
     [SerializeField] private Text _timerText;
     private Animator _anim;
+    [SerializeField] private float _timeToOpen;
+
+    public void Open() {
+        transform.LeanScale(Vector2.one, _timeToOpen);
+    }
+
+    public void Close() {
+        transform.LeanScale(Vector2.zero, _timeToOpen);
+    }
 
     void Start() {
         _background = GetComponentInChildren<Image>();
@@ -19,6 +28,7 @@ public class CurrentJobsList : MonoBehaviour {
         _headingText.enabled = false;
         _jobsList.enabled = false;
         _timerText.enabled = false;
+        Close();
     }
 
     void Update() {
@@ -49,5 +59,6 @@ public class CurrentJobsList : MonoBehaviour {
         _headingText.enabled = showList;
         _jobsList.enabled = showList;
         _timerText.enabled = showList;
+        Open();
     }
 }

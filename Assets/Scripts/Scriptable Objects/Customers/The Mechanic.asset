@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c2809277eac1614abc90a23d69671b5, type: 3}
   m_Name: The Mechanic
   m_EditorClassIdentifier: 
-  customer_name: The Mechanic
+  customerName: The Mechanic
+  customerGender: 0
   produces: []
   accepts:
   - {fileID: 11400000, guid: 948afde0a01cf9949a30e7e472fe8b12, type: 2}
