@@ -62,10 +62,12 @@
     <Compile Include="Assets\Scripts\Scriptable Objects\CustomerSO.cs" />
     <Compile Include="Assets\LeanTween\Framework\LTSeq.cs" />
     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
+    <Compile Include="Assets\Scripts\UI\CurrentJobDisplayManager.cs" />
     <Compile Include="Assets\Scripts\PlayerControls.cs" />
     <Compile Include="Assets\Scripts\UI\MinimapManager.cs" />
     <Compile Include="Assets\Scripts\CurrentJobsList.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
+    <Compile Include="Assets\Scripts\UI\GameOverManager.cs" />
     <Compile Include="Assets\Scripts\JobListing.cs" />
     <Compile Include="Assets\Scripts\Scriptable Objects\GoodsSO.cs" />
     <Compile Include="Assets\Scripts\StreetSignManager.cs" />
@@ -86,8 +88,6 @@
     <Compile Include="Assets\Scripts\UI\CreditsUIManager.cs" />
     <Compile Include="Assets\Scripts\CityBlock.cs" />
     <Compile Include="Assets\Scripts\Job.cs" />
-    <Compile Include="Assets\Scripts\UI\CurrentJobDisplayManager.cs" />
-    <Compile Include="Assets\Scripts\UI\GameOverManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

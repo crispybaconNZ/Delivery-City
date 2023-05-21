@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour {
     private Job _currentJob = null;
     private int _currentCash = 0;
     public Job CurrentJob { get { return _currentJob; } }
+    [SerializeField] private Transform _spinner;    // arrow to point towards next destination
     public int CurrentCash { get { return _currentCash; } }
     public List<CityBlock> buildings = new List<CityBlock>();
     private bool _pickedupPackage;   // false if hasn't picked up package yet, true if has package to be delivered
@@ -67,6 +68,7 @@ public class PlayerMovement : MonoBehaviour {
         LeanTween.init(800);
     }
 
+    
     private void Start() {
         SetCash(1);
         FindAllBuildings();
@@ -77,6 +79,7 @@ public class PlayerMovement : MonoBehaviour {
         DisablePauseMenuControls();
     }
 
+    #region Player Controls
     void EnablePlayerMovement() {
         if (playerControls == null) { return; }
         playerControls.Player.Movement.performed += PlayerMove;
@@ -131,6 +134,8 @@ public class PlayerMovement : MonoBehaviour {
         playerControls.PauseMenu.Disable();
     }
 
+    #endregion
+
     void Update() {
         transform.position += currentDir * _speed * Time.deltaTime;
 
@@ -142,12 +147,25 @@ public class PlayerMovement : MonoBehaviour {
                 CitySceneUIManager.Instance.ShowMessage($"Delivery overdue, you lose {CurrentJob.penalty}");
                 EarnPenalty(CurrentJob.penalty);
                 _currentJob = null;
+                _spinner.gameObject.SetActive(false);
             }
+            UpdateSpinner();
         }
         
         if (CurrentCash <= 0) {
             GameOver();
         }
+    }
+
+    private void UpdateSpinner() {
+        _spinner.gameObject.SetActive(true);
+
+        Vector2 origin = transform.position;
+        Vector2 destination = _pickedupPackage ? GetBuilding(_currentJob.destination).transform.position : GetBuilding(_currentJob.origin).transform.position;
+
+        float angle = Vector2.SignedAngle(destination, origin) + 180f;
+
+        _spinner.transform.rotation = Quaternion.Euler(0, 0, -angle);
     }
  
     private void FindAllBuildings() {
@@ -212,6 +230,7 @@ public class PlayerMovement : MonoBehaviour {
                     AudioManager.Instance.PlayThanks(CurrentJob.destination.customer.customerGender);
                     _pickedupPackage = false;
                     _currentJob = null;
+                    _spinner.gameObject.SetActive(false);
                 } else {
                     CitySceneUIManager.Instance.ShowMessage("Sorry, I'm not expecting any deliveries", currentBuilding.building.customer.customerName);
                     JobManager.Instance.CreateJobs();
