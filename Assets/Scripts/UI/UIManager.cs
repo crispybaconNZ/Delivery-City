@@ -1,5 +1,6 @@
+/** UI Manager for Main menu **/
+
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour {
@@ -15,18 +16,14 @@ public class UIManager : MonoBehaviour {
     }
 
     public void StartNewGame() {
-        SceneManager.LoadScene(1);
+        LevelLoader.Instance.LoadSpecifiedLevel(1);
     }
 
     public void ShowCredits() {
-        SceneManager.LoadScene(2);
+        LevelLoader.Instance.LoadSpecifiedLevel(2);
     }
 
     public void ExitGame() {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        LevelLoader.Instance.EndGame();
     }
 }

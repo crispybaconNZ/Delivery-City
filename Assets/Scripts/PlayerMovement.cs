@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour {
@@ -149,7 +148,7 @@ public class PlayerMovement : MonoBehaviour {
                 _currentJob = null;
                 _spinner.gameObject.SetActive(false);
             }
-            UpdateSpinner();
+            //UpdateSpinner();
         }
         
         if (CurrentCash <= 0) {
@@ -163,9 +162,13 @@ public class PlayerMovement : MonoBehaviour {
         Vector2 origin = transform.position;
         Vector2 destination = _pickedupPackage ? GetBuilding(_currentJob.destination).transform.position : GetBuilding(_currentJob.origin).transform.position;
 
-        float angle = Vector2.SignedAngle(destination, origin) + 180f;
 
-        _spinner.transform.rotation = Quaternion.Euler(0, 0, -angle);
+        //float angle = Mathf.Atan2(origin.y - destination.y, origin.x - destination.x) * Mathf.Rad2Deg + 180f;
+        //_spinner.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        //Debug.Log($"angle: {angle}");
+        Vector2 direction = origin - destination;
+        direction = direction.normalized;        
+        _spinner.transform.rotation = Quaternion.LookRotation(direction, Vector3.forward);
     }
  
     private void FindAllBuildings() {
@@ -456,6 +459,6 @@ public class PlayerMovement : MonoBehaviour {
 
     public void ReturnToMain() {
         DisablePauseMenuControls();
-        SceneManager.LoadScene(0);
+        LevelLoader.Instance.LoadSpecifiedLevel(0);        
     }
 }

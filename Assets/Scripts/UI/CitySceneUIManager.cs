@@ -68,11 +68,7 @@ public class CitySceneUIManager : MonoBehaviour {
     }
 
     public void ExitGame() {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        LevelLoader.Instance.EndGame();
     }
 
     private IEnumerator AutohideMessageBox(int time) {

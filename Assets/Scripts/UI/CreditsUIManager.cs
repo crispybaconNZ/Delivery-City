@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class CreditsUIManager : MonoBehaviour {
     private PlayerInput playerInput;
@@ -15,6 +14,6 @@ public class CreditsUIManager : MonoBehaviour {
     public void ReturnToMainMenu(InputAction.CallbackContext context) {
         playerControls.MainMenu.Select.performed -= ReturnToMainMenu;
         playerControls.MainMenu.Disable();
-        SceneManager.LoadScene(0);
+        LevelLoader.Instance.LoadSpecifiedLevel(0);
     }
 }
