@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour {
     }
 
     void Start() {
+        Cursor.visible = false;
         copyright.text = "Copyright (c) 2023 Digital Bacon. Version " + Application.version + ". Made for Ludum Dare 53 \"Delivery\".";
     }
 

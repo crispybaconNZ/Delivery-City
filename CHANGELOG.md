@@ -1,10 +1,15 @@
 # Changelog
 
 ## Version 1.2 (Unreleased)
+### Bugfixes
+- Removed mouse cursor.
+
 ### Features
 - Added minimap.
-- Moved UI animation to LeanTween.
+- Moved some UI animation to LeanTween.
 - Added voices for package collection and delivery messages.
+- Added scene transitions.
+- Updated credits.
 
 ## Version 1.1 (07 May 2023)
 ### Bugfixes
